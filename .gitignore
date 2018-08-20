@@ -2,4 +2,5 @@ Makefile
 Makefile.Debug
 Makefile.Release
 release
+ui_xbee_widget.h
 .qmake.stash
