@@ -4,9 +4,6 @@
 #include "xbee_plugin.h"
 #include "xbee_plugin_private.h"
 #include "xbee_widget.h"
-#include "deconz/aps.h"
-#include "deconz/node.h"
-#include "deconz/dbg_trace.h"
 
 XBeePlugin::XBeePlugin(QObject *parent) :
     QObject(parent)
@@ -92,6 +89,7 @@ void XBeePlugin::apsDataIndication(const deCONZ::ApsDataIndication &ind)
 
 void XBeePlugin::apsDataConfirm(const deCONZ::ApsDataConfirm &conf)
 {
+    Q_UNUSED(conf);
     //    qDebug() << Q_FUNC_INFO << conf;
 }
 
@@ -119,13 +117,13 @@ void XBeePlugin::nodeEvent(int event, const deCONZ::Node *node)
 
     switch (event)
     {
-    case deCONZ::NodeUpdated:
+    case deCONZ::NodeEvent::NodeAdded:
     {
         d->addIfUnknown(node);
     }
         break;
 
-    case deCONZ::NodeSelected:
+    case deCONZ::NodeEvent::NodeSelected:
     {
         XBee *x = d->addIfUnknown(node);
         // x might be 0
@@ -134,7 +132,7 @@ void XBeePlugin::nodeEvent(int event, const deCONZ::Node *node)
         break;
 
 
-    case deCONZ::NodeDeselected:
+    case deCONZ::NodeEvent::NodeDeselected:
         d->selected = 0;
         break;
 
@@ -183,4 +181,6 @@ const char *XBeePlugin::name()
     return "XBee Plugin";
 }
 
+#if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(xbee_plugin, XBeePlugin)
+#endif

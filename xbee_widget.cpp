@@ -1,5 +1,4 @@
 #include <QDebug>
-#include "deconz/aps.h"
 #include "xbee_plugin.h"
 #include "xbee_plugin_private.h"
 #include "xbee_widget.h"

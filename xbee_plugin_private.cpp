@@ -1,5 +1,4 @@
 #include <QTimer>
-#include "deconz/dbg_trace.h"
 #include "xbee_plugin_private.h"
 
 /*
@@ -81,12 +80,13 @@ XBeePluginPrivate::XBeePluginPrivate() :
  */
 int XBeePluginPrivate::sendAtCommand(const QString &cmd, const QString &param)
 {
+    Q_UNUSED(param);
     if (!apsCtrl || !selected)
     {
         return -1;
     }
 
-    deCONZ::Node *self = 0;
+    const deCONZ::Node *self = 0;
 
     if ((apsCtrl->getNode(0, &self) != 0) || (self == 0))
     {
@@ -122,10 +122,10 @@ int XBeePluginPrivate::sendAtCommand(const QString &cmd, const QString &param)
 //    stream << (uint8_t)0x00; //
 //    stream << (uint8_t)0x00; //
 
-    stream << (uint8_t)cmd.at(0).toAscii();
+    stream << (uint8_t)cmd.at(0).toLatin1();
     if (cmd.size() == 2)
     {
-        stream << (uint8_t)cmd.at(1).toAscii();
+        stream << (uint8_t)cmd.at(1).toLatin1();
     }
 
     deCONZ::ApsDataRequest req;

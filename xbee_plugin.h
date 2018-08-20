@@ -3,10 +3,7 @@
 
 #include <list>
 #include <QObject>
-#include "deconz/types.h"
-#include "deconz/zcl.h"
-#include "deconz/aps_controller.h"
-#include "deconz/node_interface.h"
+#include <deconz.h>
 
 class XBeeWidget;
 
@@ -34,7 +31,7 @@ public Q_SLOTS:
     void nodeEvent(int event, const deCONZ::Node *node);
 
 signals:
-    
+
 private:
     XBeePluginPrivate *d;
     XBeeWidget *m_w;

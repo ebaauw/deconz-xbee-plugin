@@ -2,19 +2,11 @@
 #define XBEE_PLUGIN_PRIVATE_H
 
 #include <list>
-#include "deconz/types.h"
-#include "deconz/aps.h"
-#include "deconz/zcl.h"
-#include "deconz/aps_controller.h"
-#include "deconz/node.h"
+#include <deconz.h>
 
 #define DIGI_PROFILE_ID 0xC105 //
 #define AT_MAX_NAME_LENGTH 16
 #define AT_MAX_DESCRIPTION_LENGTH 16
-
-namespace deCONZ {
-    class ApsController;
-}
 
 enum XBeeAtId
 {
@@ -76,7 +68,7 @@ struct XBeeAtCommand
 
 struct XBee
 {
-    zmAddress address;
+    deCONZ::Address address;
     std::list<XBeeAtCommand> atCommands;
 };
 
