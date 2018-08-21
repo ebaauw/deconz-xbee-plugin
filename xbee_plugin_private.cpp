@@ -62,8 +62,19 @@ static XBeeAtCommand createCommand(const XBeeAtInfo *info)
 XBeePluginPrivate::XBeePluginPrivate() :
     QObject(0)
 {
-    apsCtrl = 0;
+    apsCtrl = deCONZ::ApsController::instance();
+    DBG_Assert(apsCtrl != 0);
+
     selected = 0;
+
+    connect(apsCtrl, SIGNAL(apsdeDataConfirm(const deCONZ::ApsDataConfirm&)),
+            this, SLOT(apsdeDataConfirm(const deCONZ::ApsDataConfirm&)));
+
+    connect(apsCtrl, SIGNAL(apsdeDataIndication(const deCONZ::ApsDataIndication&)),
+            this, SLOT(apsdeDataIndication(const deCONZ::ApsDataIndication&)));
+
+    connect(apsCtrl, SIGNAL(nodeEvent(deCONZ::NodeEvent)),
+            this, SLOT(nodeEvent(deCONZ::NodeEvent)));
 
     timer0 = new QTimer(this);
     timer0->setSingleShot(false);
@@ -80,7 +91,7 @@ XBeePluginPrivate::XBeePluginPrivate() :
  */
 int XBeePluginPrivate::sendAtCommand(const QString &cmd, const QString &param)
 {
-    Q_UNUSED(param);
+    // Q_UNUSED(param);
     if (!apsCtrl || !selected)
     {
         return -1;
@@ -142,9 +153,11 @@ int XBeePluginPrivate::sendAtCommand(const QString &cmd, const QString &param)
 
     if (apsCtrl->apsdeDataRequest(req) == 0)
     {
+        DBG_Printf(DBG_INFO, "XBee: sent: AT: %s %s\n", qPrintable(cmd), qPrintable(param));
         return 0;
     }
 
+    DBG_Printf(DBG_INFO, "XBee: failed: AT: %s %s\n", qPrintable(cmd), qPrintable(param));
     return -1;
 }
 
@@ -187,7 +200,7 @@ XBee *XBeePluginPrivate::addIfUnknown(const deCONZ::Node *node)
     }
 
     // create new
-    DBG_Printf(DBG_INFO, "Added new XBee %s\n", qPrintable(node->address().toStringExt()));
+    DBG_Printf(DBG_INFO, "XBee: added new XBee %s\n", qPrintable(node->address().toStringExt()));
     XBee x;
     x.address = node->address();
     xbees.push_back(x);

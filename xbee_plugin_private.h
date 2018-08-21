@@ -84,6 +84,10 @@ public:
     const XBee *getSelected();
 
 public Q_SLOTS:
+    void apsDataIndication(const deCONZ::ApsDataIndication &ind);
+    void apsDataConfirm(const deCONZ::ApsDataConfirm &conf);
+    int apsDataRequestToSelected(deCONZ::ApsDataRequest &req);
+    void nodeEvent(const deCONZ::NodeEvent &event);
     void timer0Fired();
 
 public:

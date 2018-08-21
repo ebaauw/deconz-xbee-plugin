@@ -14,6 +14,9 @@ class XBeePlugin : public QObject,
 {
     Q_OBJECT
     Q_INTERFACES(deCONZ::NodeInterface)
+    #if QT_VERSION >= 0x050000
+        Q_PLUGIN_METADATA(IID "org.dresden-elektronik.DeXBeePlugin")
+    #endif
 
 public:
     explicit XBeePlugin(QObject *parent = 0);
@@ -25,10 +28,6 @@ public:
     void setApsController(deCONZ::ApsController *ctrl);
 
 public Q_SLOTS:
-    void apsDataIndication(const deCONZ::ApsDataIndication &ind);
-    void apsDataConfirm(const deCONZ::ApsDataConfirm &conf);
-    int apsDataRequestToSelected(deCONZ::ApsDataRequest &req);
-    void nodeEvent(int event, const deCONZ::Node *node);
 
 signals:
 

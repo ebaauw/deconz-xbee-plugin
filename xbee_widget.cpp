@@ -23,6 +23,7 @@ XBeeWidget::~XBeeWidget()
 void XBeeWidget::atCommandSendClicked()
 {
     QString cmd = ui->atCmdEdit->text().toUpper();
+    DBG_Printf(DBG_INFO, "XBee: UI: AT %s%s\n", qPrintable(cmd), qPrintable(ui->atCmdParamEdit->text()));
     d->sendAtCommand(cmd, ui->atCmdParamEdit->text());
 }
 

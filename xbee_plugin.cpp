@@ -10,6 +10,7 @@ XBeePlugin::XBeePlugin(QObject *parent) :
 {
     d = new XBeePluginPrivate;
     m_w = 0;
+    DBG_Printf(DBG_INFO, "XBee: plugin loaded\n");
 }
 
 XBeePlugin::~XBeePlugin()
@@ -18,8 +19,9 @@ XBeePlugin::~XBeePlugin()
     d = 0;
 }
 
-void XBeePlugin::apsDataIndication(const deCONZ::ApsDataIndication &ind)
+void XBeePluginPrivate::apsDataIndication(const deCONZ::ApsDataIndication &ind)
 {
+    DBG_Printf(DBG_INFO, "XBee: apsDataIndication()\n");
     if (ind.profileId() == DIGI_PROFILE_ID)
     {
         if (ind.clusterId() == 0x00a1)
@@ -48,7 +50,7 @@ void XBeePlugin::apsDataIndication(const deCONZ::ApsDataIndication &ind)
 
             if (!s.isEmpty())
             {
-                DBG_Printf(DBG_INFO, "AT: %s\n", qPrintable(s));
+                DBG_Printf(DBG_INFO, "XBee: AT: %s\n", qPrintable(s));
             }
         }
     }
@@ -81,23 +83,26 @@ void XBeePlugin::apsDataIndication(const deCONZ::ApsDataIndication &ind)
 
             if (!s.isEmpty())
             {
-                DBG_Printf(DBG_INFO, "AT: %s\n", qPrintable(s));
+                DBG_Printf(DBG_INFO, "XBee: AT: %s\n", qPrintable(s));
             }
         }
     }
 }
 
-void XBeePlugin::apsDataConfirm(const deCONZ::ApsDataConfirm &conf)
+void XBeePluginPrivate::apsDataConfirm(const deCONZ::ApsDataConfirm &conf)
 {
+    DBG_Printf(DBG_INFO, "XBee: apsDataConfirm()\n");
     Q_UNUSED(conf);
     //    qDebug() << Q_FUNC_INFO << conf;
 }
 
-int XBeePlugin::apsDataRequestToSelected(deCONZ::ApsDataRequest &req)
+int XBeePluginPrivate::apsDataRequestToSelected(deCONZ::ApsDataRequest &req)
 {
-    if (d->apsCtrl && d->selected)
+    DBG_Printf(DBG_INFO, "XBee: apsDataRequestToSelected()\n");
+
+    if (apsCtrl && selected)
     {
-        req.dstAddress() = d->selected->address;
+        req.dstAddress() = selected->address;
 //        if (m_selected->address.hasNwk())
 //        {
 //            req.setDstAddressMode(deCONZ::ApsNwkAddress);
@@ -106,38 +111,46 @@ int XBeePlugin::apsDataRequestToSelected(deCONZ::ApsDataRequest &req)
 //        {
             req.setDstAddressMode(deCONZ::ApsExtAddress);
 //        }
-        return d->apsCtrl->apsdeDataRequest(req);
+        return apsCtrl->apsdeDataRequest(req);
     }
 
     return -1;
 }
 
-void XBeePlugin::nodeEvent(int event, const deCONZ::Node *node)
+void XBeePluginPrivate::nodeEvent(const deCONZ::NodeEvent &event)
 {
-
-    switch (event)
+    switch (event.event())
     {
     case deCONZ::NodeEvent::NodeAdded:
     {
-        d->addIfUnknown(node);
+        addIfUnknown(event.node());
     }
         break;
 
     case deCONZ::NodeEvent::NodeSelected:
     {
-        XBee *x = d->addIfUnknown(node);
+
+        XBee *x = addIfUnknown(event.node());
         // x might be 0
-        d->selected = x;
+        selected = x;
+        if (x != 0)
+        {
+            DBG_Printf(DBG_INFO, "XBee: %s selected\n", qPrintable(event.node()->address().toStringExt()));
+        }
+        else
+        {
+            DBG_Printf(DBG_INFO, "XBee: no XBee selected\n");
+        }
     }
         break;
 
-
     case deCONZ::NodeEvent::NodeDeselected:
-        d->selected = 0;
+        DBG_Printf(DBG_INFO, "XBee: no XBee selected\n");
+        selected = 0;
         break;
 
     default:
-        DBG_Printf(DBG_INFO, "XBee unhandled node event %d\n", event);
+        // DBG_Printf(DBG_INFO, "XBee: unhandled node event %d\n", event);
         break;
     }
 }
