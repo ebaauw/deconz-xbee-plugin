@@ -128,7 +128,7 @@ int XBeePluginPrivate::sendAtCommand(const QString &cmd, const QString &param)
 //    stream << (uint8_t)0x03; // sender mac6
 //    stream << (uint8_t)0x52; // sender mac7
 
-    stream << self->address().ext();
+    stream << static_cast<quint64>(self->address().ext());
     stream << self->address().nwk();
 //    stream << (uint8_t)0x00; //
 //    stream << (uint8_t)0x00; //
