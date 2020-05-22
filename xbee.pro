@@ -1,4 +1,4 @@
-TARGET = de_xbee_plugin
+TARGET = xbee_plugin
 
 # common configuration for deCONZ plugins
 
